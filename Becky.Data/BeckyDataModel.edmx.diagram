@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="d8acc4b505334b4d803f0a7cc56d4a3e" Name="Diagram1" ZoomLevel="100">
+        <EntityTypeShape EntityType="Becky.DatabaseModel.C__MigrationHistory" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.AspNetRole" Width="1.5" PointX="0.75" PointY="11.5" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.AspNetUserClaim" Width="1.5" PointX="5.25" PointY="10" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.AspNetUserLogin" Width="1.5" PointX="5.25" PointY="22.5" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.AspNetUser" Width="1.5" PointX="3" PointY="9.25" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.LookupPhotoType" Width="1.5" PointX="8.25" PointY="7.75" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.LookupRestaurantType" Width="1.5" PointX="6" PointY="7.5" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.LookupReviewType" Width="1.5" PointX="8.25" PointY="19.75" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.Restaurant" Width="1.5" PointX="8.25" PointY="10.75" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.RestaurantBranch" Width="1.5" PointX="5.25" PointY="12.75" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.RestaurantPhoto" Width="1.5" PointX="10.5" PointY="11.875" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.RestaurantRating" Width="1.5" PointX="7.5" PointY="15.125" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.RestaurantReview" Width="1.5" PointX="10.5" PointY="16.625" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.User" Width="1.5" PointX="2.75" PointY="0.75" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.ELMAH_Error" Width="1.5" PointX="0.75" PointY="3.75" />
+        <EntityTypeShape EntityType="Becky.DatabaseModel.ViewRestaurant" Width="1.5" PointX="2.75" PointY="3.75" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantBranchCreatedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantBranchModifiedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantCreatedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantModifiedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantPhotoCreatedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantPhotoModifiedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantRatingAspNetUsersCreatedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantRatingAspNetUsersModifiedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantReviewAspNetUsers" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_ReviewAspNetUsersCreatedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_ReviewAspNetUsersModifiedBy" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantPhotoLookupPhotoType" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantLookupRestaurantType" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantReviewLookupReviewType" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantBranchRestaurant" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantPhotoRestaurantBranch" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantRatingRestaurantBranch" />
+        <AssociationConnector Association="Becky.DatabaseModel.FK_RestaurantReviewRestaurantBranch" />
+        <AssociationConnector Association="Becky.DatabaseModel.AspNetUserRoles" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

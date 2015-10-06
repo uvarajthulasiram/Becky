@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3>The only time to eat diet food is while you're waiting for the steak to cook. [Julia Child]</h3>
+    </div>
+    <div class="panel panel-body bgimg">
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon glyphicon glyphicon-search"></span>
+                <input data-bind="value: searchText" type="text" id="txtSearchText" class="form-control" placeholder="Any cuisine or restaurant">
+                <span class="input-group-addon">in Calgary</span>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-heading">
+        <h3>Here are some of the best restaurants... :)</h3>
+    </div>
+    <div class="panel panel-body row" data-bind="foreach: restaurants">
+        <div class="col-sm-6 col-md-4">
+            <p align="center">
+                <a data-bind="attr: { 'href': '@Url.Action("Restaurant", new RouteValueDictionary() {{"Controller", "Home"}})/' + Id }">
+                    <img data-bind="attr:{src: PhotoSource ? PhotoSource : '../../Images/Becky - No Image Icon.png' }" class="img img-responsive img-rounded fix-height" />
+                </a>
+
+            </p>
+            <div class="caption">
+                <h3><span data-bind="text: Name"></span></h3>
+                <p><span data-bind="text: AddressLine1"></span><br/>
+                <span data-bind="text: AddressLine2"></span></p>
+                <p><span class="glyphicon glyphicon-phone-alt"></span>: <span data-bind="text: Phone"></span></p>
+                <p>
+                    <div class="form-group">
+                            Your score:
+                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
+                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
+                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
+                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
+                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <style type="text/css">
+        .bgimg {
+            height: 240px;
+            background-image: url('../../Images/Becky - Calgary panorama.jpeg');
+            background-size: cover;
+        }
+
+        .fix-height {
+            height: 200px;
+            background-size: contain;
+        }
+
+        .ui-autocomplete-category {
+            font-weight: bold;
+            padding: .2em .4em;
+            margin: .8em 0 .2em;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var uriAutocomplete = '/Home/GetAutocompleteValues';
+            var uriRestaurants = '/Home/GetRestaurants';
+
+            var viewModel = {
+                searchText: ko.observable(),
+                restaurants: ko.observableArray([])
+            };
+
+            function getRestaurants() {
+                $.postJSON(uriRestaurants + '/' + viewModel.searchText())
+                    .done(function(data) {
+                        viewModel.restaurants(data);
+                    });
+            }
+
+            $.widget("custom.catcomplete", $.ui.autocomplete, {
+                _create: function() {
+                    this._super();
+                    this.widget().menu("option", "items", "> :not(.ui-autocomplete-category)");
+                },
+                _renderMenu: function(ul, items) {
+                    var that = this,
+                        currentCategory = "";
+                    $.each(items, function(index, item) {
+                        if (item.category !== currentCategory) {
+                            ul.append("<li class='ui-autocomplete-category'>" + item.category + "</li>");
+                            currentCategory = item.category;
+                        }
+                        var li = that._renderItemData(ul, item);
+                        if (item.category) {
+                            li.attr("aria-label", item.category + " : " + item.label);
+                        }
+                    });
+                }
+            });
+
+            function getAutocompleteValues() {
+                $.postJSON(uriAutocomplete)
+                    .done(function(data) {
+                        $("#txtSearchText").catcomplete({
+                            delay: 0,
+                            source: data,
+                            minLength: 2
+                        }).keyup(function (e) {
+                            if (e.which === 13) {
+                                $(".ui-autocomplete-category").parent().hide();
+                                $(".ui-menu-item").hide();
+                            }
+                        });
+                    });
+            }
+
+            viewModel.searchText.subscribe(function() {
+                getRestaurants();
+            });
+
+            getAutocompleteValues();
+            getRestaurants();
+
+            ko.applyBindings(viewModel);
+        });
+    </script>
+}

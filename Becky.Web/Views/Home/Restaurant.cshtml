@@ -1,0 +1,121 @@
+﻿@using System.Web.UI.WebControls
+@model Becky.Web.Models.RestaurantModel
+@{
+    ViewBag.Title = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="jumbotron">
+    <h3>@Model.Name</h3>
+    <p>
+        @Model.AddressLine1<br />
+        @Model.AddressLine2
+    </p>
+    <p><span class="glyphicon glyphicon-phone-alt"></span>: @Model.Phone</p>
+    <p><span class="glyphicon glyphicon-globe"></span>: @Model.Website</p>
+    <div class="panel-body row" data-bind="foreach: restaurantPhotos">
+        <div class="col-sm-3 col-md-2">
+            <img data-bind="attr:{src: PhotoSource ? PhotoSource : '../../Images/Becky - No Image Icon.png' }" class="img img-responsive img-rounded fix-height" />
+        </div>
+    </div>
+    <p>
+        <textarea id="txtRestaurantReview" class="form-control" rows="3" placeholder="Write review"></textarea>
+    </p>
+    <p>
+        <button id="btnPost" class="btn btn-primary">Post Review</button>
+        <button class="btn btn-default">Cancel</button>
+    </p>
+</div>
+<div class="panel panel-default">
+    <div class="panel panel-heading">
+        <h3>Recent reviews</h3>
+    </div>
+    <div class="panel panel-body" data-bind="foreach: restaurantReviews">
+        <div class="row">
+            <div class="col-sm-12 col-md-8">
+                <span data-bind="text: ReviewText"></span>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <button type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Useful
+                </button>
+                <button type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Spam
+                </button>
+            </div>
+        </div>
+        <p>
+            # of people found this review useful.
+        </p>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel panel-heading">
+        <h3>Similar restaurants</h3>
+    </div>
+    <div class="panel panel-body">
+        Similar restaurants
+    </div>
+</div>
+@section scripts
+{
+    <style type="text/css">
+        .fix-height {
+            height: 100px;
+            background-size: contain;
+        }
+    </style>
+    <script type="text/javascript">
+        var restaurantId = @Model.Id;
+        var uriRestaurant = '/Home/GetRestaurant';
+        var uriRestaurantReviews = '/Home/GetRestaurantReviews';
+        var uriRestaurantPhotos = '/Home/GetRestaurantPhotos';
+        var uriRelatedRestaurants = '/Home/GetRelatedRestaurants';
+        var uriPostRestaurantReview = '/Home/PostRestaurantReview';
+
+        var viewModel = {
+            restaurantReviews: ko.observableArray([]),
+            restaurantPhotos: ko.observableArray([]),
+            relatedRestaurants: ko.observableArray([])
+        };
+
+        function getRestaurantReviews() {
+            $.postJSON(uriRestaurantReviews + '/' + restaurantId)
+                .done(function(data) {
+                    viewModel.restaurantReviews(data);
+                });
+        }
+
+        function getRestaurantPhotos() {
+            $.postJSON(uriRestaurantPhotos + '/' + restaurantId)
+                .done(function(data) {
+                    viewModel.restaurantPhotos(data);
+                });
+        }
+
+        function getRelatedRestaurants() {
+            $.postJSON(uriRelatedRestaurants + '/' + restaurantId)
+                .done(function(data) {
+                    viewModel.relatedRestaurants(data);
+                });
+        }
+
+        $('#btnPost').click(function() {
+            var restaurantReview = {
+                RestaurantBranchId: restaurantId,
+                ReviewText: $('#txtRestaurantReview').val(),
+                ReviewTypeId: 1
+            };
+            $.postJSON(uriPostRestaurantReview, restaurantReview)
+                .done(function(data) {
+                    console.log(data);
+
+                    getRestaurantReviews();
+                });
+        });
+
+        getRestaurantReviews();
+
+        ko.applyBindings(viewModel);
+    </script>
+}
