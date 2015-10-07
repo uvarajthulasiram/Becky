@@ -12,16 +12,19 @@ namespace Becky.Task.Task
     public class RestaurantTask : TaskBase, IRestaurantTask
     {
         private readonly IRepository<ViewRestaurant> _viewRestaurantRepository;
+        private readonly IRepository<ViewReview> _viewReviewRepository;
         private readonly IRepository<RestaurantReview> _restaurantReviewRepository;
         private readonly IRepository<RestaurantRating> _restaurantRatingRepository;
         private readonly IRepository<RestaurantPhoto> _restaurantPhotoRepository;
 
         public RestaurantTask(IRepository<ViewRestaurant> viewRestaurantRepository, 
+            IRepository<ViewReview> viewReviewRepository, 
             IRepository<RestaurantReview> restaurantReviewRepository, 
             IRepository<RestaurantRating> restaurantRatingRepository, 
             IRepository<RestaurantPhoto> restaurantPhotoRepository)
         {
             _viewRestaurantRepository = viewRestaurantRepository;
+            _viewReviewRepository = viewReviewRepository;
             _restaurantReviewRepository = restaurantReviewRepository;
             _restaurantRatingRepository = restaurantRatingRepository;
             _restaurantPhotoRepository = restaurantPhotoRepository;
@@ -55,14 +58,14 @@ namespace Becky.Task.Task
             throw new NotImplementedException();
         }
 
-        public IEnumerable<RestaurantReview> GetRestaurantReviews(int restaurantBranchId)
+        public IEnumerable<ViewReview> GetRestaurantReviews(int restaurantBranchId)
         {
-            return _restaurantReviewRepository.Find(p => p.RestaurantBranchId == restaurantBranchId);
+            return _viewReviewRepository.Find(p => p.RestaurantBranchId == restaurantBranchId).OrderByDescending(p => p.ModifiedOn ?? p.CreatedOn);
         }
 
         public IEnumerable<RestaurantPhoto> GetRestaurantPhotos(int restaurantBranchId)
         {
-            return _restaurantPhotoRepository.Find(p => p.RestaurantBranchId == restaurantBranchId).Take(5);
+            return _restaurantPhotoRepository.Find(p => p.RestaurantBranchId == restaurantBranchId);
         }
 
         public void AddRestaurantReview(RestaurantReview restaurantReview)

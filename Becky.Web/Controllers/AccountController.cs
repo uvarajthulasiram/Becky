@@ -1,14 +1,15 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Becky.Web.Helpers;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Becky.Web.Models;
+using Facebook;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Becky.Web.Controllers
 {
@@ -333,6 +334,8 @@ namespace Becky.Web.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    //ToDo: Review - Update Identity Details
+                    //UpdateProfilePictureIfNotCurrent(loginInfo);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -346,6 +349,28 @@ namespace Becky.Web.Controllers
                     return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
             }
         }
+
+        //private void UpdateProfilePictureIfNotCurrent(ExternalLoginInfo info)
+        //{
+        //    if (info.Login.LoginProvider != "Facebook") return;
+
+        //    var identity = AuthenticationManager.GetExternalIdentity(DefaultAuthenticationTypes.ExternalCookie);
+        //    var accessToken = identity.FindFirstValue("FacebookAccessToken");
+        //    var fb = new FacebookClient(accessToken);
+        //    dynamic myInfo = fb.Get("/me?fields=first_name,last_name,picture"); // specify the email field
+
+        //    var store = new UserStore<ApplicationUser>(new ApplicationDbContext());
+        //    var user = UserManager.FindById(info.ExternalIdentity.GetUserId());
+
+        //    user.FirstName = myInfo.first_name;
+        //    user.LastName = myInfo.last_name;
+        //    user.ProfilePictureUrl = myInfo.picture["data"]["url"];
+
+        //    UserManager.Update(user);
+
+        //    var ctx = store.Context;
+        //    ctx.SaveChanges();
+        //}
 
         //
         // POST: /Account/ExternalLoginConfirmation
@@ -367,7 +392,24 @@ namespace Becky.Web.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                if (info.Login.LoginProvider == "Facebook")
+                {
+                    var identity = AuthenticationManager.GetExternalIdentity(DefaultAuthenticationTypes.ExternalCookie);
+                    var accessToken = identity.FindFirstValue("FacebookAccessToken");
+                    var fb = new FacebookClient(accessToken);
+                    dynamic myInfo = fb.Get("/me?fields=first_name,last_name,picture"); // specify the email field
+                    model.FirstName = myInfo.first_name;
+                    model.LastName = myInfo.last_name;
+                    model.ProfilePictureUrl = myInfo.picture["data"]["url"];
+                }
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    ProfilePictureUrl = model.ProfilePictureUrl
+                };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

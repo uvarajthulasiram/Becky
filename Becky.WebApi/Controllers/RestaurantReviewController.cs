@@ -15,9 +15,9 @@ namespace Becky.WebApi.Controllers
             _restaurantTask = restaurantTask;
         }
 
-        public IEnumerable<RestaurantReview> GetRestaurantReviews(int restaurantBranchId)
-        {
-            return _restaurantTask.GetRestaurantReviews(restaurantBranchId);
-        }
+        //public IEnumerable<RestaurantReview> GetRestaurantReviews(int restaurantBranchId)
+        //{
+        //    return _restaurantTask.GetRestaurantReviews(restaurantBranchId);
+        //}
     }
 }

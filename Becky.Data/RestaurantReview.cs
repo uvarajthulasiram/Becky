@@ -18,17 +18,16 @@ namespace Becky.Data
         public int RestaurantBranchId { get; set; }
         public string AspNetUserId { get; set; }
         public string ReviewText { get; set; }
-        public int ReviewTypeId { get; set; }
         public bool IsSpam { get; set; }
         public string CreatedBy { get; set; }
         public System.DateTime CreatedOn { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
+        public string ReviewTitle { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }
         public virtual AspNetUser AspNetUser2 { get; set; }
-        public virtual LookupReviewType LookupReviewType { get; set; }
         public virtual RestaurantBranch RestaurantBranch { get; set; }
     }
 }

@@ -32,9 +32,14 @@ namespace Becky.Web
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/extras").Include(
+                      "~/Scripts/moment.js",
+                      "~/Scripts/star-rating.js"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+                      "~/Content/site.css",
+                      "~/Content/star-rating.css"));
 
             bundles.Add(new StyleBundle("~/Content/jqueryuicss").Include(
                       "~/Content/themes/base/all.css"));

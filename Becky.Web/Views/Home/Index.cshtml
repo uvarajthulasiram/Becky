@@ -27,19 +27,12 @@
             </p>
             <div class="caption">
                 <h3><span data-bind="text: Name"></span></h3>
-                <p><span data-bind="text: AddressLine1"></span><br/>
-                <span data-bind="text: AddressLine2"></span></p>
-                <p><span class="glyphicon glyphicon-phone-alt"></span>: <span data-bind="text: Phone"></span></p>
                 <p>
-                    <div class="form-group">
-                            Your score:
-                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
-                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
-                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
-                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
-                                <a href="#" class="glyphicon glyphicon-star-empty"></a>
-                    </div>
+                    <span data-bind="text: AddressLine1"></span><br />
+                    <span data-bind="text: AddressLine2"></span>
                 </p>
+                <p><span class="glyphicon glyphicon-phone-alt"></span>: <span data-bind="text: Phone"></span></p>
+                
             </div>
         </div>
     </div>
@@ -64,7 +57,7 @@
         }
     </style>
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             var uriAutocomplete = '/Home/GetAutocompleteValues';
             var uriRestaurants = '/Home/GetRestaurants';
 
@@ -75,20 +68,20 @@
 
             function getRestaurants() {
                 $.postJSON(uriRestaurants + '/' + viewModel.searchText())
-                    .done(function(data) {
+                    .done(function (data) {
                         viewModel.restaurants(data);
                     });
             }
 
             $.widget("custom.catcomplete", $.ui.autocomplete, {
-                _create: function() {
+                _create: function () {
                     this._super();
                     this.widget().menu("option", "items", "> :not(.ui-autocomplete-category)");
                 },
-                _renderMenu: function(ul, items) {
+                _renderMenu: function (ul, items) {
                     var that = this,
                         currentCategory = "";
-                    $.each(items, function(index, item) {
+                    $.each(items, function (index, item) {
                         if (item.category !== currentCategory) {
                             ul.append("<li class='ui-autocomplete-category'>" + item.category + "</li>");
                             currentCategory = item.category;
@@ -103,7 +96,7 @@
 
             function getAutocompleteValues() {
                 $.postJSON(uriAutocomplete)
-                    .done(function(data) {
+                    .done(function (data) {
                         $("#txtSearchText").catcomplete({
                             delay: 0,
                             source: data,
@@ -117,7 +110,7 @@
                     });
             }
 
-            viewModel.searchText.subscribe(function() {
+            viewModel.searchText.subscribe(function () {
                 getRestaurants();
             });
 

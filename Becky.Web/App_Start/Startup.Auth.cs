@@ -72,8 +72,15 @@ namespace Becky.Web
             {
                 AppId = "1660004590884536",
                 AppSecret = "166085d0f1fdcb3c248b53e8ccdf026d",
-                AuthenticationType = "Facebook",
-                SignInAsAuthenticationType = "ExternalCookie"
+                Scope = { "email" },
+                Provider = new FacebookAuthenticationProvider
+                {
+                    OnAuthenticated = context =>
+                    {
+                        context.Identity.AddClaim(new Claim("FacebookAccessToken", context.AccessToken));
+                        return System.Threading.Tasks.Task.FromResult(true);
+                    }
+                }
             };
 
             app.UseFacebookAuthentication(facebookAuthenticationOptions);

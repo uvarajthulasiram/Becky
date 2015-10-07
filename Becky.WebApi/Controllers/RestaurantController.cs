@@ -43,7 +43,7 @@ namespace Becky.WebApi.Controllers
                 _restaurantTask.UpdateRestaurantRating(restaurantRating);
         }
 
-        public IEnumerable<RestaurantReview> GetRestaurantReviews(int restaurantBranchId) => _restaurantTask.GetRestaurantReviews(restaurantBranchId);
+        //public IEnumerable<RestaurantReview> GetRestaurantReviews(int restaurantBranchId) => _restaurantTask.GetRestaurantReviews(restaurantBranchId);
 
         [Authorize]
         public HttpResponseMessage PostRestaurantReview(RestaurantReview restaurantReview)

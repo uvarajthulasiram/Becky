@@ -150,9 +150,7 @@
     <Compile Include="LookupRestaurantType.cs">
       <DependentUpon>BeckyDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="LookupReviewType.cs">
-      <DependentUpon>BeckyDataModel.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataAccess\Repository.cs" />
     <Compile Include="DataAccess\UnitOfWork.cs" />
@@ -175,6 +173,9 @@
       <DependentUpon>BeckyDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ViewRestaurant.cs">
+      <DependentUpon>BeckyDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ViewReview.cs">
       <DependentUpon>BeckyDataModel.tt</DependentUpon>
     </Compile>
   </ItemGroup>

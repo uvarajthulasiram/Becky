@@ -86,7 +86,7 @@
     <Build Include="dbo\Tables\LookupRestaurantType.sql" />
     <Build Include="dbo\Views\ViewRestaurant.sql" />
     <Build Include="dbo\Tables\RestaurantRating.sql" />
-    <Build Include="dbo\Tables\LookupReviewType.sql" />
+    <Build Include="dbo\Views\ViewReview.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BeckysDatabase.publish.xml" />

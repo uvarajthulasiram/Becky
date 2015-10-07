@@ -44,7 +44,6 @@
     <Compile Include="Enums\ActionStatus.cs" />
     <Compile Include="Enums\Cuisine.cs" />
     <Compile Include="Enums\PhotoType.cs" />
-    <Compile Include="Enums\ReviewType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entity\RestaurantFilter.cs" />
   </ItemGroup>

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Mvc;
+using System.Web.Security;
 using AutoMapper.Internal;
 using Becky.Data;
 using Becky.Domain.Entity;
@@ -60,8 +59,8 @@ namespace Becky.Web.Controllers
             var cuisines = _lookupTask.GetCuisines().Select(p => p.Type);
             var restaurants = _restaurantTask.GetRestaurants(null).Select(p => p.Name);
 
-            cuisines.Each(p => autocompleteModels.Add(new AutocompleteModel {category = "Cuisine", label = p}));
-            restaurants.Each(p => autocompleteModels.Add(new AutocompleteModel {category = "Name", label = p}));
+            cuisines.Each(p => autocompleteModels.Add(new AutocompleteModel { category = "Cuisine", label = p }));
+            restaurants.Each(p => autocompleteModels.Add(new AutocompleteModel { category = "Name", label = p }));
 
             return Json(autocompleteModels);
         }
@@ -76,22 +75,33 @@ namespace Becky.Web.Controllers
 
         public JsonResult GetRestaurants(string parameter)
         {
-            if(string.IsNullOrWhiteSpace(parameter) || parameter == "undefined")
-                return Json(_restaurantTask.GetRestaurants(null).Take(30));
+            if (string.IsNullOrWhiteSpace(parameter) || parameter == "undefined")
+                return Json(_restaurantTask.GetRestaurants(null).Take(Helper.GetNumberOfRestaurantsToShowInHome()));
 
-            var restaurantFilter = Enum.IsDefined(typeof(Cuisine), parameter) ? 
-                new RestaurantFilter {Cuisine = Helper.ParseEnum<Cuisine>(parameter)} : 
-                new RestaurantFilter {Name = parameter};
+            var restaurantFilter = Enum.IsDefined(typeof(Cuisine), parameter) ?
+                new RestaurantFilter { Cuisine = Helper.ParseEnum<Cuisine>(parameter) } :
+                new RestaurantFilter { Name = parameter };
 
-            return Json(_restaurantTask.GetRestaurants(restaurantFilter).Select(_mappingService.Map<ViewRestaurant, RestaurantModel>).Take(30));
+            return
+                Json(
+                    _restaurantTask.GetRestaurants(restaurantFilter)
+                        .Select(_mappingService.Map<ViewRestaurant, RestaurantModel>)
+                        .Take(Helper.GetNumberOfRestaurantsToShowInHome()));
         }
 
         public JsonResult GetRelatedRestaurants(int parameter)
         {
-            return Json(_restaurantTask.GetRelatedRestaurants(parameter).Select(_mappingService.Map<ViewRestaurant, RestaurantModel>).Take(5));
+            return
+                Json(
+                    _restaurantTask.GetRelatedRestaurants(parameter)
+                        .Select(_mappingService.Map<ViewRestaurant, RestaurantModel>)
+                        .Take(Helper.GetNumberOfRelatedRestaurantsToShow()));
         }
 
-        public JsonResult GetRestaurantPhotos(int parameter) => Json(_restaurantTask.GetRestaurantPhotos(parameter));
+        public JsonResult GetRestaurantPhotos(int parameter)
+        {
+            return Json(_restaurantTask.GetRestaurantPhotos(parameter).Take(Helper.GetNumberOfRestaurantPhotosToShow()));
+        }
 
         public JsonResult GetRestaurantRating(int parameter)
         {
@@ -107,7 +117,12 @@ namespace Becky.Web.Controllers
                 _restaurantTask.UpdateRestaurantRating(restaurantRating);
         }
 
-        public JsonResult GetRestaurantReviews(int parameter) => Json(_restaurantTask.GetRestaurantReviews(parameter).Select(_mappingService.Map<RestaurantReview, RestaurantReviewModel>));
+        public JsonResult GetRestaurantReviews(int parameter)
+        {
+            return
+                Json(_restaurantTask.GetRestaurantReviews(parameter)
+                        .Select(review => _mappingService.Map<ViewReview, RestaurantReviewModel>(review)));
+        }
 
         [Authorize]
         public JsonResult PostRestaurantReview(RestaurantReviewModel model)
@@ -116,8 +131,8 @@ namespace Becky.Web.Controllers
             {
                 AspNetUserId = User.Identity.GetUserId(),
                 RestaurantBranchId = model.RestaurantBranchId,
+                ReviewTitle = model.ReviewTitle,
                 ReviewText = model.ReviewText,
-                ReviewTypeId = model.ReviewTypeId,
                 CreatedOn = DateTime.Now,
                 CreatedBy = User.Identity.GetUserId()
             };

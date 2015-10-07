@@ -65,6 +65,9 @@
           <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
           <Property Name="AccessFailedCount" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="256" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="256" />
+          <Property Name="ProfilePictureUrl" Type="nvarchar" MaxLength="256" />
         </EntityType>
         <EntityType Name="LookupPhotoType">
           <Key>
@@ -75,14 +78,6 @@
           <Property Name="Description" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="LookupRestaurantType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" Nullable="false" />
-          <Property Name="Type" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="Description" Type="varchar" MaxLength="100" />
-        </EntityType>
-        <EntityType Name="LookupReviewType">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -154,8 +149,8 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RestaurantBranchId" Type="int" Nullable="false" />
           <Property Name="AspNetUserId" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="ReviewText" Type="nvarchar" MaxLength="500" />
-          <Property Name="ReviewTypeId" Type="int" Nullable="false" />
+          <Property Name="ReviewTitle" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ReviewText" Type="nvarchar" MaxLength="500" Nullable="false" />
           <Property Name="IsSpam" Type="bit" Nullable="false" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="CreatedOn" Type="smalldatetime" Nullable="false" />
@@ -211,6 +206,26 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="PhotoSource" Type="varchar" MaxLength="100" />
           <Property Name="Type" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Becky.Database.dbo.ViewReview' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ViewReview">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="RestaurantBranchId" />
+            <PropertyRef Name="ReviewTitle" />
+            <PropertyRef Name="ReviewText" />
+            <PropertyRef Name="CreatedOn" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="RestaurantBranchId" Type="int" Nullable="false" />
+          <Property Name="ReviewTitle" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ReviewText" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="CreatedOn" Type="smalldatetime" Nullable="false" />
+          <Property Name="ModifiedOn" Type="smalldatetime" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="256" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="256" />
+          <Property Name="ProfilePictureUrl" Type="nvarchar" MaxLength="256" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
@@ -436,18 +451,6 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RestaurantReviewLookupReviewType">
-          <End Role="LookupReviewType" Type="Self.LookupReviewType" Multiplicity="1" />
-          <End Role="RestaurantReview" Type="Self.RestaurantReview" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LookupReviewType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RestaurantReview">
-              <PropertyRef Name="ReviewTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RestaurantReviewRestaurantBranch">
           <End Role="RestaurantBranch" Type="Self.RestaurantBranch" Multiplicity="1" />
           <End Role="RestaurantReview" Type="Self.RestaurantReview" Multiplicity="*" />
@@ -493,7 +496,6 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LookupPhotoType" EntityType="Self.LookupPhotoType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LookupRestaurantType" EntityType="Self.LookupRestaurantType" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="LookupReviewType" EntityType="Self.LookupReviewType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Restaurant" EntityType="Self.Restaurant" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RestaurantBranch" EntityType="Self.RestaurantBranch" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RestaurantPhoto" EntityType="Self.RestaurantPhoto" Schema="dbo" store:Type="Tables" />
@@ -516,6 +518,19 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
     [ViewRestaurant].[PhotoSource] AS [PhotoSource], 
     [ViewRestaurant].[Type] AS [Type]
     FROM [dbo].[ViewRestaurant] AS [ViewRestaurant]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ViewReview" EntityType="Self.ViewReview" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ViewReview].[Id] AS [Id], 
+    [ViewReview].[RestaurantBranchId] AS [RestaurantBranchId], 
+    [ViewReview].[ReviewTitle] AS [ReviewTitle], 
+    [ViewReview].[ReviewText] AS [ReviewText], 
+    [ViewReview].[CreatedOn] AS [CreatedOn], 
+    [ViewReview].[ModifiedOn] AS [ModifiedOn], 
+    [ViewReview].[FirstName] AS [FirstName], 
+    [ViewReview].[LastName] AS [LastName], 
+    [ViewReview].[ProfilePictureUrl] AS [ProfilePictureUrl]
+    FROM [dbo].[ViewReview] AS [ViewReview]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -589,10 +604,6 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="RestaurantReview" EntitySet="RestaurantReview" />
           </AssociationSet>
-          <AssociationSet Name="FK_RestaurantReviewLookupReviewType" Association="Self.FK_RestaurantReviewLookupReviewType">
-            <End Role="LookupReviewType" EntitySet="LookupReviewType" />
-            <End Role="RestaurantReview" EntitySet="RestaurantReview" />
-          </AssociationSet>
           <AssociationSet Name="FK_RestaurantReviewRestaurantBranch" Association="Self.FK_RestaurantReviewRestaurantBranch">
             <End Role="RestaurantBranch" EntitySet="RestaurantBranch" />
             <End Role="RestaurantReview" EntitySet="RestaurantReview" />
@@ -618,7 +629,6 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <EntitySet Name="AspNetUsers" EntityType="Becky.DatabaseModel.AspNetUser" />
           <EntitySet Name="LookupPhotoTypes" EntityType="Becky.DatabaseModel.LookupPhotoType" />
           <EntitySet Name="LookupRestaurantTypes" EntityType="Becky.DatabaseModel.LookupRestaurantType" />
-          <EntitySet Name="LookupReviewTypes" EntityType="Becky.DatabaseModel.LookupReviewType" />
           <EntitySet Name="Restaurants" EntityType="Becky.DatabaseModel.Restaurant" />
           <EntitySet Name="RestaurantBranches" EntityType="Becky.DatabaseModel.RestaurantBranch" />
           <EntitySet Name="RestaurantPhotoes" EntityType="Becky.DatabaseModel.RestaurantPhoto" />
@@ -687,10 +697,6 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
             <End Role="LookupRestaurantType" EntitySet="LookupRestaurantTypes" />
             <End Role="Restaurant" EntitySet="Restaurants" />
           </AssociationSet>
-          <AssociationSet Name="FK_RestaurantReviewLookupReviewType" Association="Becky.DatabaseModel.FK_RestaurantReviewLookupReviewType">
-            <End Role="LookupReviewType" EntitySet="LookupReviewTypes" />
-            <End Role="RestaurantReview" EntitySet="RestaurantReviews" />
-          </AssociationSet>
           <AssociationSet Name="FK_RestaurantBranchRestaurant" Association="Becky.DatabaseModel.FK_RestaurantBranchRestaurant">
             <End Role="Restaurant" EntitySet="Restaurants" />
             <End Role="RestaurantBranch" EntitySet="RestaurantBranches" />
@@ -711,6 +717,7 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
             <End Role="AspNetRole" EntitySet="AspNetRoles" />
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
           </AssociationSet>
+          <EntitySet Name="ViewReviews" EntityType="Becky.DatabaseModel.ViewReview" />
         </EntityContainer>
         <EntityType Name="C__MigrationHistory">
           <Key>
@@ -781,6 +788,9 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <NavigationProperty Name="RestaurantReviews1" Relationship="Becky.DatabaseModel.FK_ReviewAspNetUsersCreatedBy" FromRole="AspNetUser" ToRole="RestaurantReview" />
           <NavigationProperty Name="RestaurantReviews2" Relationship="Becky.DatabaseModel.FK_ReviewAspNetUsersModifiedBy" FromRole="AspNetUser" ToRole="RestaurantReview" />
           <NavigationProperty Name="AspNetRoles" Relationship="Becky.DatabaseModel.AspNetUserRoles" FromRole="AspNetUser" ToRole="AspNetRole" />
+          <Property Name="FirstName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ProfilePictureUrl" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="LookupPhotoType">
           <Key>
@@ -798,15 +808,6 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Type" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Restaurants" Relationship="Becky.DatabaseModel.FK_RestaurantLookupRestaurantType" FromRole="LookupRestaurantType" ToRole="Restaurant" />
-          <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="LookupReviewType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Type" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="RestaurantReviews" Relationship="Becky.DatabaseModel.FK_RestaurantReviewLookupReviewType" FromRole="LookupReviewType" ToRole="RestaurantReview" />
           <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Restaurant">
@@ -890,8 +891,7 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="RestaurantBranchId" Type="Int32" Nullable="false" />
           <Property Name="AspNetUserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ReviewText" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="ReviewTypeId" Type="Int32" Nullable="false" />
+          <Property Name="ReviewText" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="IsSpam" Type="Boolean" Nullable="false" />
           <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="0" />
@@ -900,8 +900,8 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <NavigationProperty Name="AspNetUser" Relationship="Becky.DatabaseModel.FK_RestaurantReviewAspNetUsers" FromRole="RestaurantReview" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="Becky.DatabaseModel.FK_ReviewAspNetUsersCreatedBy" FromRole="RestaurantReview" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="Becky.DatabaseModel.FK_ReviewAspNetUsersModifiedBy" FromRole="RestaurantReview" ToRole="AspNetUser" />
-          <NavigationProperty Name="LookupReviewType" Relationship="Becky.DatabaseModel.FK_RestaurantReviewLookupReviewType" FromRole="RestaurantReview" ToRole="LookupReviewType" />
           <NavigationProperty Name="RestaurantBranch" Relationship="Becky.DatabaseModel.FK_RestaurantReviewRestaurantBranch" FromRole="RestaurantReview" ToRole="RestaurantBranch" />
+          <Property Name="ReviewTitle" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -1135,18 +1135,6 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RestaurantReviewLookupReviewType">
-          <End Type="Becky.DatabaseModel.LookupReviewType" Role="LookupReviewType" Multiplicity="1" />
-          <End Type="Becky.DatabaseModel.RestaurantReview" Role="RestaurantReview" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LookupReviewType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RestaurantReview">
-              <PropertyRef Name="ReviewTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RestaurantBranchRestaurant">
           <End Type="Becky.DatabaseModel.Restaurant" Role="Restaurant" Multiplicity="1" />
           <End Type="Becky.DatabaseModel.RestaurantBranch" Role="RestaurantBranch" Multiplicity="*" />
@@ -1199,6 +1187,24 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <End Type="Becky.DatabaseModel.AspNetRole" Role="AspNetRole" Multiplicity="*" />
           <End Type="Becky.DatabaseModel.AspNetUser" Role="AspNetUser" Multiplicity="*" />
         </Association>
+        <EntityType Name="ViewReview">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ReviewText" />
+            <PropertyRef Name="CreatedOn" />
+            <PropertyRef Name="ReviewTitle" />
+            <PropertyRef Name="RestaurantBranchId" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="ReviewText" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="0" />
+          <Property Name="FirstName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ProfilePictureUrl" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ReviewTitle" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="RestaurantBranchId" Type="Int32" Nullable="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1245,6 +1251,9 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="Becky.DatabaseModel.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="ProfilePictureUrl" ColumnName="ProfilePictureUrl" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
                 <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
@@ -1272,15 +1281,6 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <EntitySetMapping Name="LookupRestaurantTypes">
             <EntityTypeMapping TypeName="Becky.DatabaseModel.LookupRestaurantType">
               <MappingFragment StoreEntitySet="LookupRestaurantType">
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="LookupReviewTypes">
-            <EntityTypeMapping TypeName="Becky.DatabaseModel.LookupReviewType">
-              <MappingFragment StoreEntitySet="LookupReviewType">
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -1351,12 +1351,12 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
           <EntitySetMapping Name="RestaurantReviews">
             <EntityTypeMapping TypeName="Becky.DatabaseModel.RestaurantReview">
               <MappingFragment StoreEntitySet="RestaurantReview">
+                <ScalarProperty Name="ReviewTitle" ColumnName="ReviewTitle" />
                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="IsSpam" ColumnName="IsSpam" />
-                <ScalarProperty Name="ReviewTypeId" ColumnName="ReviewTypeId" />
                 <ScalarProperty Name="ReviewText" ColumnName="ReviewText" />
                 <ScalarProperty Name="AspNetUserId" ColumnName="AspNetUserId" />
                 <ScalarProperty Name="RestaurantBranchId" ColumnName="RestaurantBranchId" />
@@ -1416,6 +1416,21 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewRestaurant' does not have a
               <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="ViewReviews">
+            <EntityTypeMapping TypeName="Becky.DatabaseModel.ViewReview">
+              <MappingFragment StoreEntitySet="ViewReview">
+                <ScalarProperty Name="RestaurantBranchId" ColumnName="RestaurantBranchId" />
+                <ScalarProperty Name="ReviewTitle" ColumnName="ReviewTitle" />
+                <ScalarProperty Name="ProfilePictureUrl" ColumnName="ProfilePictureUrl" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="ReviewText" ColumnName="ReviewText" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

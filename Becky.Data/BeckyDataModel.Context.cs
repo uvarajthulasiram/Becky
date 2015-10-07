@@ -34,7 +34,6 @@ namespace Becky.Data
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
         public virtual DbSet<LookupPhotoType> LookupPhotoTypes { get; set; }
         public virtual DbSet<LookupRestaurantType> LookupRestaurantTypes { get; set; }
-        public virtual DbSet<LookupReviewType> LookupReviewTypes { get; set; }
         public virtual DbSet<Restaurant> Restaurants { get; set; }
         public virtual DbSet<RestaurantBranch> RestaurantBranches { get; set; }
         public virtual DbSet<RestaurantPhoto> RestaurantPhotoes { get; set; }
@@ -43,6 +42,7 @@ namespace Becky.Data
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<ELMAH_Error> ELMAH_Error { get; set; }
         public virtual DbSet<ViewRestaurant> ViewRestaurants { get; set; }
+        public virtual DbSet<ViewReview> ViewReviews { get; set; }
         public ObjectContext ObjectContext
         {
             get { return this.GetObjectContext(); }
