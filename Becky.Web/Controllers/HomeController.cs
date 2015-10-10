@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using System.Web.Security;
 using AutoMapper.Internal;
 using Becky.Data;
 using Becky.Domain.Entity;
@@ -17,13 +16,21 @@ namespace Becky.Web.Controllers
     public class HomeController : Controller
     {
         private readonly IRestaurantTask _restaurantTask;
+        private readonly IRestaurantReviewTask _restaurantReviewTask;
+        private readonly IRestaurantRatingTask _restaurantRatingTask;
+        private readonly IRestaurantPhotoTask _restaurantPhotoTask;
         private readonly ILookupTask _lookupTask;
         private readonly IMappingService _mappingService;
 
-        public HomeController(IMappingService mappingService, IRestaurantTask restaurantTask, ILookupTask lookupTask)
+        public HomeController(IMappingService mappingService, IRestaurantTask restaurantTask,
+            IRestaurantReviewTask restaurantReviewTask, IRestaurantRatingTask restaurantRatingTask,
+            IRestaurantPhotoTask restaurantPhotoTask, ILookupTask lookupTask)
         {
             _mappingService = mappingService;
             _restaurantTask = restaurantTask;
+            _restaurantReviewTask = restaurantReviewTask;
+            _restaurantRatingTask = restaurantRatingTask;
+            _restaurantPhotoTask = restaurantPhotoTask;
             _lookupTask = lookupTask;
         }
 
@@ -100,27 +107,27 @@ namespace Becky.Web.Controllers
 
         public JsonResult GetRestaurantPhotos(int parameter)
         {
-            return Json(_restaurantTask.GetRestaurantPhotos(parameter).Take(Helper.GetNumberOfRestaurantPhotosToShow()));
+            return Json(_restaurantPhotoTask.GetRestaurantPhotos(parameter).Take(Helper.GetNumberOfRestaurantPhotosToShow()));
         }
 
         public JsonResult GetRestaurantRating(int parameter)
         {
-            return Json(_restaurantTask.GetConsolidatedRating(parameter));
+            return Json(_restaurantRatingTask.GetConsolidatedRating(parameter));
         }
 
         [Authorize]
         public void PostRestaurantRating(RestaurantRating restaurantRating)
         {
             if (restaurantRating.Id == 0)
-                _restaurantTask.AddRestaurantRating(restaurantRating);
+                _restaurantRatingTask.AddRestaurantRating(restaurantRating);
             else
-                _restaurantTask.UpdateRestaurantRating(restaurantRating);
+                _restaurantRatingTask.UpdateRestaurantRating(restaurantRating);
         }
 
         public JsonResult GetRestaurantReviews(int parameter)
         {
             return
-                Json(_restaurantTask.GetRestaurantReviews(parameter)
+                Json(_restaurantReviewTask.GetRestaurantReviews(parameter)
                         .Select(review => _mappingService.Map<ViewReview, RestaurantReviewModel>(review)));
         }
 
@@ -139,7 +146,7 @@ namespace Becky.Web.Controllers
 
             try
             {
-                _restaurantTask.AddRestaurantReview(restaurantReview);
+                _restaurantReviewTask.AddRestaurantReview(restaurantReview);
                 return Json(new { status = ActionStatus.Successful });
             }
             catch (Exception exception)
@@ -153,7 +160,7 @@ namespace Becky.Web.Controllers
         {
             try
             {
-                _restaurantTask.ReportRestaurantReviewAsSpam(parameter);
+                _restaurantReviewTask.ReportRestaurantReviewAsSpam(parameter);
                 return Json(new { status = ActionStatus.Successful });
             }
             catch (Exception exception)
@@ -167,7 +174,7 @@ namespace Becky.Web.Controllers
         {
             try
             {
-                _restaurantTask.RemoveRestaurantReview(parameter);
+                _restaurantReviewTask.RemoveRestaurantReview(parameter);
                 return Json(new { status = ActionStatus.Successful });
             }
             catch (Exception exception)

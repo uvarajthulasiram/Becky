@@ -34,12 +34,18 @@ namespace Becky.Web
 
             bundles.Add(new ScriptBundle("~/bundles/extras").Include(
                       "~/Scripts/moment.js",
-                      "~/Scripts/star-rating.js"));
+                      "~/Scripts/star-rating.js",
+                      "~/Scripts/lightslider.js",
+                      "~/Scripts/lightgallery.js",
+                      "~/Scripts/lg-thumbnail.js",
+                      "~/Scripts/lg-fullscreen.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
-                      "~/Content/star-rating.css"));
+                      "~/Content/star-rating.css",
+                      "~/Content/lightslider.css",
+                      "~/Content/lightgallery.css"));
 
             bundles.Add(new StyleBundle("~/Content/jqueryuicss").Include(
                       "~/Content/themes/base/all.css"));

@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Becky.Task\LookupTaskTest.cs" />
+    <Compile Include="Becky.Task\RestaurantRatingTaskTest.cs" />
     <Compile Include="Becky.Web\Controllers\HomeControllerTest.cs" />
     <Compile Include="Becky.Web\Controllers\LookupControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

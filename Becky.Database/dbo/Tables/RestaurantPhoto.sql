@@ -4,6 +4,7 @@
 	[RestaurantBranchId] INT NOT NULL,
 	[PhotoTypeId] INT NOT NULL,
 	[PhotoSource] VARCHAR(100) NOT NULL,
+	[IsSpam] BIT NOT NULL DEFAULT(0),
     [CreatedBy] NVARCHAR(128) NOT NULL,
 	[CreatedOn] SMALLDATETIME NOT NULL,
     [ModifiedBy] NVARCHAR(128) NULL,

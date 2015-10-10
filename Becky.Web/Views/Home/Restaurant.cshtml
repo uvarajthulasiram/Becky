@@ -12,15 +12,21 @@
     </p>
     <p><span class="glyphicon glyphicon-phone-alt"></span>: @Model.Phone</p>
     <p><span class="glyphicon glyphicon-globe"></span>: @Model.Website</p>
-    <div class="panel-body row" data-bind="foreach: restaurantPhotos">
-        <div class="col-sm-3 col-md-2">
-            <img data-bind="attr:{src: PhotoSource ? PhotoSource : '../../Images/Becky - No Image Icon.png' }" class="img img-responsive img-rounded fix-height" />
-        </div>
-    </div> 
-    @*https://github.com/kartik-v/bootstrap-star-rating*@
+    <p>
+        <ul id="autoWidth">
+            <li>
+                <a href="../../Images/sample-restaurant-01.jpg"><img src="../../Images/sample-restaurant-01.jpg" class="img img-rounded img-responsive fix-height" /></a>
+            </li>
+            <li>
+                <a href="../../Images/sample-restaurant-02.jpg"><img src="../../Images/sample-restaurant-02.jpg" class="img img-rounded img-responsive fix-height" /></a>
+            </li>
+        </ul>
+    </p>
     <input id="input-id" type="number" class="rating" step="1" data-size="xs" />
     <p>
-        <input id="txtRestaurantReviewTitle" class="form-control" placeholder="Review title"/>
+        <input id="txtRestaurantReviewTitle" class="form-control" placeholder="Review title" />
+    </p>
+    <p>
         <textarea id="txtRestaurantReview" class="form-control" rows="3" placeholder="Detailed review"></textarea>
     </p>
     <p>
@@ -63,6 +69,7 @@
             height: 100px;
             background-size: contain;
         }
+
         .fix-height-profile-picture {
             height: 50px;
             background-size: contain;
@@ -105,16 +112,16 @@
                 });
         }
 
-        //function postRestaurantRating() {
-        //    $.postJSON(uriPostRestaurantRating + '/' + restaurantId)
-        //        .done(function() {
-        //            viewModel.relatedRestaurants(data);
-        //        });
-        //}
+        function postRestaurantRating() {
+            $.postJSON(uriPostRestaurantRating + '/' + restaurantId)
+                .done(function() {
+                    viewModel.relatedRestaurants(data);
+                });
+        }
 
-        //viewModel.restaurantRating.subscribe(function () {
-        //    postRestaurantRating();
-        //});
+        viewModel.restaurantRating.subscribe(function () {
+            postRestaurantRating();
+        });
 
         function formatDate(rawDate) {
             return moment(parseInt(rawDate.substr(6))).format("Do MMMM YYYY");
@@ -130,7 +137,6 @@
             console.log(restaurantReview);
             $.postJSON(uriPostRestaurantReview, restaurantReview)
                 .done(function() {
-                    console.log('in');
                     getRestaurantReviews();
                 });
         });
@@ -141,6 +147,11 @@
         $('#input-id').on('rating.change', function(event, value, caption) {
             restaurantRating(value);
         });
+
+        $('#autoWidth').lightSlider({
+            autoWidth:true,
+            loop:false
+        }).lightGallery();
 
         ko.applyBindings(viewModel);
     </script>

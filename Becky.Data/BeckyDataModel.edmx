@@ -125,6 +125,7 @@
           <Property Name="RestaurantBranchId" Type="int" Nullable="false" />
           <Property Name="PhotoTypeId" Type="int" Nullable="false" />
           <Property Name="PhotoSource" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="IsSpam" Type="bit" Nullable="false" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="CreatedOn" Type="smalldatetime" Nullable="false" />
           <Property Name="ModifiedBy" Type="nvarchar" MaxLength="128" />
@@ -868,6 +869,7 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewReview' does not have a pri
           <NavigationProperty Name="AspNetUser1" Relationship="Becky.DatabaseModel.FK_RestaurantPhotoModifiedBy" FromRole="RestaurantPhoto" ToRole="AspNetUser" />
           <NavigationProperty Name="LookupPhotoType" Relationship="Becky.DatabaseModel.FK_RestaurantPhotoLookupPhotoType" FromRole="RestaurantPhoto" ToRole="LookupPhotoType" />
           <NavigationProperty Name="RestaurantBranch" Relationship="Becky.DatabaseModel.FK_RestaurantPhotoRestaurantBranch" FromRole="RestaurantPhoto" ToRole="RestaurantBranch" />
+          <Property Name="IsSpam" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="RestaurantRating">
           <Key>
@@ -1324,6 +1326,7 @@ warning 6002: The table/view 'Becky.Database.dbo.ViewReview' does not have a pri
           <EntitySetMapping Name="RestaurantPhotoes">
             <EntityTypeMapping TypeName="Becky.DatabaseModel.RestaurantPhoto">
               <MappingFragment StoreEntitySet="RestaurantPhoto">
+                <ScalarProperty Name="IsSpam" ColumnName="IsSpam" />
                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />

@@ -6,24 +6,24 @@ namespace Becky.WebApi.Controllers
 {
     public class RestaurantRatingController : ApiController
     {
-        private readonly IRestaurantTask _restaurantTask;
+        private readonly IRestaurantRatingTask _restaurantRatingTask;
 
-        public RestaurantRatingController(IRestaurantTask restaurantTask)
+        public RestaurantRatingController(IRestaurantRatingTask restaurantRatingTask)
         {
-            _restaurantTask = restaurantTask;
+            _restaurantRatingTask = restaurantRatingTask;
         }
 
         public float Get(int restaurantBranchId)
         {
-            return _restaurantTask.GetConsolidatedRating(restaurantBranchId);
+            return _restaurantRatingTask.GetConsolidatedRating(restaurantBranchId);
         }
 
         public void Post(RestaurantRating restaurantRating)
         {
             if (restaurantRating.Id == 0)
-                _restaurantTask.AddRestaurantRating(restaurantRating);
+                _restaurantRatingTask.AddRestaurantRating(restaurantRating);
             else
-                _restaurantTask.UpdateRestaurantRating(restaurantRating);
+                _restaurantRatingTask.UpdateRestaurantRating(restaurantRating);
         }
     }
 }

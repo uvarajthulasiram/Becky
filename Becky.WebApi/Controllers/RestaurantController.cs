@@ -12,10 +12,17 @@ namespace Becky.WebApi.Controllers
     public class RestaurantController : ApiController
     {
         private readonly IRestaurantTask _restaurantTask;
+        private readonly IRestaurantReviewTask _restaurantReviewTask;
+        private readonly IRestaurantRatingTask _restaurantRatingTask;
+        private readonly IRestaurantPhotoTask _restaurantPhotoTask;
 
-        public RestaurantController(IRestaurantTask restaurantTask)
+        public RestaurantController(IRestaurantTask restaurantTask, IRestaurantReviewTask restaurantReviewTask,
+            IRestaurantRatingTask restaurantRatingTask, IRestaurantPhotoTask restaurantPhotoTask)
         {
             _restaurantTask = restaurantTask;
+            _restaurantReviewTask = restaurantReviewTask;
+            _restaurantRatingTask = restaurantRatingTask;
+            _restaurantPhotoTask = restaurantPhotoTask;
         }
 
         public IEnumerable<string> GetRestaurantNames([FromBody] RestaurantFilter restaurantFilter)
@@ -27,20 +34,20 @@ namespace Becky.WebApi.Controllers
 
         public IEnumerable<ViewRestaurant> GetRestaurants(RestaurantFilter restaurantFilter) => _restaurantTask.GetRestaurants(restaurantFilter);
 
-        public IEnumerable<RestaurantPhoto> GetRestaurantPhotos(int restaurantBranchId) => _restaurantTask.GetRestaurantPhotos(restaurantBranchId);
+        public IEnumerable<RestaurantPhoto> GetRestaurantPhotos(int restaurantBranchId) => _restaurantPhotoTask.GetRestaurantPhotos(restaurantBranchId);
 
         public float GetRestaurantRating(int restaurantBranchId)
         {
-            return _restaurantTask.GetConsolidatedRating(restaurantBranchId);
+            return _restaurantRatingTask.GetConsolidatedRating(restaurantBranchId);
         }
 
         [Authorize]
         public void PostRestaurantRating(RestaurantRating restaurantRating)
         {
             if (restaurantRating.Id == 0)
-                _restaurantTask.AddRestaurantRating(restaurantRating);
+                _restaurantRatingTask.AddRestaurantRating(restaurantRating);
             else
-                _restaurantTask.UpdateRestaurantRating(restaurantRating);
+                _restaurantRatingTask.UpdateRestaurantRating(restaurantRating);
         }
 
         //public IEnumerable<RestaurantReview> GetRestaurantReviews(int restaurantBranchId) => _restaurantTask.GetRestaurantReviews(restaurantBranchId);
@@ -52,7 +59,7 @@ namespace Becky.WebApi.Controllers
 
             try
             {
-                _restaurantTask.AddRestaurantReview(restaurantReview);
+                _restaurantReviewTask.AddRestaurantReview(restaurantReview);
                 response.StatusCode = HttpStatusCode.Created;
             }
             catch
@@ -70,7 +77,7 @@ namespace Becky.WebApi.Controllers
 
             try
             {
-                _restaurantTask.ReportRestaurantReviewAsSpam(restaurantReviewId);
+                _restaurantReviewTask.ReportRestaurantReviewAsSpam(restaurantReviewId);
                 response.StatusCode = HttpStatusCode.OK;
             }
             catch
@@ -88,7 +95,7 @@ namespace Becky.WebApi.Controllers
 
             try
             {
-                _restaurantTask.RemoveRestaurantReview(restaurantReviewId);
+                _restaurantReviewTask.RemoveRestaurantReview(restaurantReviewId);
                 response.StatusCode = HttpStatusCode.OK;
             }
             catch
