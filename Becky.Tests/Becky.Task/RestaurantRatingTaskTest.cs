@@ -40,10 +40,13 @@ namespace Becky.Tests.Becky.Task
         [Test]
         public void ConsolidatedRatingBasicTest()
         {
+            //Arrange
             var expectation = 4;
 
+            //Act
             var actual = _restaurantRatingTask.GetConsolidatedRating(_restaurantBranchId);
 
+            //Assert
             Assert.AreEqual(expectation, actual);
         }
     }
