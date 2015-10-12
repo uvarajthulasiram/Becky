@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="jumbotron">
+<div class="well">
     <h3>@Model.Name</h3>
     <p>
         @Model.AddressLine1<br />
@@ -13,12 +13,13 @@
     <p><span class="glyphicon glyphicon-phone-alt"></span>: @Model.Phone</p>
     <p><span class="glyphicon glyphicon-globe"></span>: @Model.Website</p>
     <p>
-        <ul id="autoWidth">
+
+
+        <ul id="autoWidth" data-bind="foreach: restaurantPhotos">
             <li>
-                <a href="../../Images/sample-restaurant-01.jpg"><img src="../../Images/sample-restaurant-01.jpg" class="img img-rounded img-responsive fix-height" /></a>
-            </li>
-            <li>
-                <a href="../../Images/sample-restaurant-02.jpg"><img src="../../Images/sample-restaurant-02.jpg" class="img img-rounded img-responsive fix-height" /></a>
+                <a data-bind="attr:{href: PhotoSource}">
+                    <img data-bind="attr:{src: PhotoSource}" class="img img-rounded img-responsive fix-height" />
+                </a>
             </li>
         </ul>
     </p>
@@ -32,6 +33,17 @@
     <p>
         <button id="btnPost" class="btn btn-primary">Post Review</button>
         <button class="btn btn-default">Cancel</button>
+        @using (Ajax.BeginForm("AsyncUpload", "Home", new AjaxOptions { HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @*<div id="upload-file-container">
+                    <input type="file" name="imageFile" id="imageFile" class="fix-height" />
+                </div>*@
+            
+            <span class="btn btn-default btn-file">
+                Add photo(s) <input type="file" name="imageFile" id="imageFile" />
+            </span>
+        }
     </p>
 </div>
 <div class="panel panel-default">
@@ -65,6 +77,38 @@
 @section scripts
 {
     <style type="text/css">
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-file input[type=file] {
+                position: absolute;
+                top: 0;
+                right: 0;
+                min-width: 100%;
+                min-height: 100%;
+                font-size: 100px;
+                text-align: right;
+                filter: alpha(opacity=0);
+                opacity: 0;
+                outline: none;
+                background: white;
+                cursor: inherit;
+                display: block;
+            }
+
+        #upload-file-container {
+            height: 100px;
+            background: url(../../Images/addphoto.jpg) no-repeat;
+            background-size: contain;
+        }
+
+            #upload-file-container input {
+                filter: alpha(opacity=0);
+                opacity: 0;
+            }
+
         .fix-height {
             height: 100px;
             background-size: contain;
@@ -75,6 +119,7 @@
             background-size: contain;
         }
     </style>
+    <script type="text/javascript" src="http://malsup.github.com/jquery.form.js"></script>
     <script type="text/javascript">
         var restaurantId = @Model.Id;
         var uriRestaurant = '/Home/GetRestaurant';
@@ -152,6 +197,24 @@
             autoWidth:true,
             loop:false
         }).lightGallery();
+
+        $('#imageFile').on("change", function(){ $('form').submit(); });
+
+        (function() {
+            $('form').ajaxForm({
+                beforeSend: function() {
+                    console.log('beforeSend');
+                },
+                uploadProgress: function() {
+                },
+                success: function() {
+                    console.log('success');
+                },
+                complete: function() {
+                    console.log('complete');
+                }
+            });
+        })();
 
         ko.applyBindings(viewModel);
     </script>

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using AutoMapper.Internal;
 using Becky.Data;
@@ -175,6 +177,37 @@ namespace Becky.Web.Controllers
             try
             {
                 _restaurantReviewTask.RemoveRestaurantReview(parameter);
+                return Json(new { status = ActionStatus.Successful });
+            }
+            catch (Exception exception)
+            {
+                return Json(new { status = ActionStatus.Failed, data = exception.Message });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public JsonResult AsyncUpload()
+        {
+            var files = Request.Files;
+
+            try
+            {
+                if (files == null) return Json(new { status = ActionStatus.Successful, data = "No files to upload!" });
+
+                for(var i = 0; i < files.Count; i++)
+                {
+                    var file = files[i];
+
+                    if (file == null || file.ContentLength <= 0) continue;
+
+                    var fileName = new Guid() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(Server.MapPath("~/FileStore"), fileName);
+
+                    file.SaveAs(filePath);
+                }
+
                 return Json(new { status = ActionStatus.Successful });
             }
             catch (Exception exception)
