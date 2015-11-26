@@ -109,7 +109,17 @@ namespace Becky.Web.Controllers
 
         public JsonResult GetRestaurantPhotos(int parameter)
         {
-            return Json(_restaurantPhotoTask.GetRestaurantPhotos(parameter).Take(Helper.GetNumberOfRestaurantPhotosToShow()));
+            var photos =
+                _restaurantPhotoTask.GetRestaurantPhotos(parameter)
+                .Select(_mappingService.Map<RestaurantPhoto, RestaurantPhotoModel>)
+                .Take(Helper.GetNumberOfRestaurantPhotosToShow()).ToList();
+
+            if(!photos.Any())
+                photos.ToList().Add(new RestaurantPhotoModel
+                {
+                    PhotoSource = "Becky - No Image Icon.png"
+                });
+            return Json(photos);
         }
 
         public JsonResult GetRestaurantRating(int parameter)
@@ -186,9 +196,8 @@ namespace Becky.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize]
-        public JsonResult AsyncUpload()
+        public JsonResult AsyncUpload(int parameter)
         {
             var files = Request.Files;
 
@@ -198,14 +207,9 @@ namespace Becky.Web.Controllers
 
                 for(var i = 0; i < files.Count; i++)
                 {
-                    var file = files[i];
-
-                    if (file == null || file.ContentLength <= 0) continue;
-
-                    var fileName = new Guid() + Path.GetExtension(file.FileName);
-                    var filePath = Path.Combine(Server.MapPath("~/FileStore"), fileName);
-
-                    file.SaveAs(filePath);
+                    string fileName;
+                    if(TrySaveFileToFileStore(files[i], out fileName))
+                        SaveFileToDb(fileName, parameter);
                 }
 
                 return Json(new { status = ActionStatus.Successful });
@@ -214,6 +218,31 @@ namespace Becky.Web.Controllers
             {
                 return Json(new { status = ActionStatus.Failed, data = exception.Message });
             }
+        }
+
+        private void SaveFileToDb(string fileName, int restaurantBranchId)
+        {
+            _restaurantPhotoTask.AddPhoto(new RestaurantPhoto
+            {
+                RestaurantBranchId = restaurantBranchId,
+                PhotoSource = fileName,
+                CreatedOn = DateTime.Now,
+                CreatedBy = User.Identity.GetUserId()
+            });
+        }
+
+        private bool TrySaveFileToFileStore(HttpPostedFileBase file, out string fileName)
+        {
+            fileName = string.Empty;
+
+            if (file == null || file.ContentLength <= 0) return false;
+
+            fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(Server.MapPath("~/FileStore"), fileName);
+
+            file.SaveAs(filePath);
+
+            return true;
         }
     }
 }

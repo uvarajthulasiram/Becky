@@ -12,17 +12,31 @@
     </p>
     <p><span class="glyphicon glyphicon-phone-alt"></span>: @Model.Phone</p>
     <p><span class="glyphicon glyphicon-globe"></span>: @Model.Website</p>
-    <p>
-
-
-        <ul id="autoWidth" data-bind="foreach: restaurantPhotos">
-            <li>
-                <a data-bind="attr:{href: PhotoSource}">
-                    <img data-bind="attr:{src: PhotoSource}" class="img img-rounded img-responsive fix-height" />
-                </a>
-            </li>
-        </ul>
-    </p>
+    <button id="test"></button>
+    <div>
+        <div class="row">
+            <div class="col-xs-2">
+                @using (Ajax.BeginForm("AsyncUpload", "Home", new { parameter = @Model.Id }, new AjaxOptions { HttpMethod = "POST" }, new { id = "photoUploadForm", enctype = "multipart/form-data" }))
+                {
+                    @*<span class="btn btn-info btn-file">
+                            Add more photo(s) <input type="file" name="imageFile" id="imageFile" />
+                        </span>*@
+                    <div id="upload-file-container" class="img img-responsive img-rounded">
+                        <input type="file" name="imageFile" id="imageFile" />
+                    </div>
+                }
+            </div>
+            <div class="col-xs-10">
+                <ul id="autoWidth" class="cS-hidden" data-bind="foreach: restaurantPhotos">
+                    <li>
+                        <a data-bind="attr:{href: '../../FileStore/' + PhotoSource}">
+                            <img data-bind="attr:{src: '../../FileStore/' + PhotoSource}" class="img img-rounded img-responsive fix-height" />
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <input id="input-id" type="number" class="rating" step="1" data-size="xs" />
     <p>
         <input id="txtRestaurantReviewTitle" class="form-control" placeholder="Review title" />
@@ -33,17 +47,6 @@
     <p>
         <button id="btnPost" class="btn btn-primary">Post Review</button>
         <button class="btn btn-default">Cancel</button>
-        @using (Ajax.BeginForm("AsyncUpload", "Home", new AjaxOptions { HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
-            @*<div id="upload-file-container">
-                    <input type="file" name="imageFile" id="imageFile" class="fix-height" />
-                </div>*@
-            
-            <span class="btn btn-default btn-file">
-                Add photo(s) <input type="file" name="imageFile" id="imageFile" />
-            </span>
-        }
     </p>
 </div>
 <div class="panel panel-default">
@@ -59,9 +62,7 @@
             </div>
             <div class="col-sm-15 col-md-10">
                 <h4><span data-bind="text: ReviewTitle"></span></h4>
-                @*<i>[#No of people found this useful]</i>*@
                 <p><span data-bind="text: ReviewText"></span></p>
-                @*<p>Was this review useful? <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button></p>*@
             </div>
         </div>
     </div>
@@ -77,7 +78,7 @@
 @section scripts
 {
     <style type="text/css">
-        .btn-file {
+        /*.btn-file {
             position: relative;
             overflow: hidden;
         }
@@ -96,11 +97,11 @@
                 background: white;
                 cursor: inherit;
                 display: block;
-            }
+            }*/
 
         #upload-file-container {
             height: 100px;
-            background: url(../../Images/addphoto.jpg) no-repeat;
+            background: url(../../Images/addPhotoIcon.jpg) no-repeat;
             background-size: contain;
         }
 
@@ -119,7 +120,6 @@
             background-size: contain;
         }
     </style>
-    <script type="text/javascript" src="http://malsup.github.com/jquery.form.js"></script>
     <script type="text/javascript">
         var restaurantId = @Model.Id;
         var uriRestaurant = '/Home/GetRestaurant';
@@ -127,6 +127,7 @@
         var uriRestaurantPhotos = '/Home/GetRestaurantPhotos';
         var uriRelatedRestaurants = '/Home/GetRelatedRestaurants';
         var uriPostRestaurantReview = '/Home/PostRestaurantReview';
+        var uriPostRestaurantRating = '';
 
         var viewModel = {
             restaurantRating: ko.observable(),
@@ -179,42 +180,60 @@
                 ReviewTitle: $('#txtRestaurantReviewTitle').val()
             };
 
-            console.log(restaurantReview);
             $.postJSON(uriPostRestaurantReview, restaurantReview)
                 .done(function() {
                     getRestaurantReviews();
                 });
         });
 
-        getRestaurantReviews();
-
         $('#input-id').rating('refresh', {disabled: false, showClear: false, showCaption: false});
         $('#input-id').on('rating.change', function(event, value, caption) {
             restaurantRating(value);
         });
 
-        $('#autoWidth').lightSlider({
-            autoWidth:true,
-            loop:false
-        }).lightGallery();
-
-        $('#imageFile').on("change", function(){ $('form').submit(); });
+        $('#imageFile').on("change", function(){ $('#photoUploadForm').submit(); });
 
         (function() {
-            $('form').ajaxForm({
+            $('#photoUploadForm').ajaxForm({
                 beforeSend: function() {
-                    console.log('beforeSend');
+
                 },
                 uploadProgress: function() {
+
                 },
                 success: function() {
-                    console.log('success');
+                    getRestaurantPhotos();
                 },
                 complete: function() {
-                    console.log('complete');
+
                 }
             });
         })();
+
+        var lSlider = $('#autoWidth').lightSlider({
+            autoWidth: true,
+            //slideMove: 2,
+            //auto: true,
+            //loop: true,
+            onSliderLoad: function() {
+                $('#autoWidth').removeClass('cS-hidden');
+            }
+        }).lightGallery();
+
+        $('#autoWidth').parent().on('mouseenter', function() {
+            lSlider.pause();
+        });
+        $('#autoWidth').parent().on('mouseleave', function() {
+            lSlider.play();
+        });
+
+        $('#test').click(function() {
+            lSlider.refresh();
+        });
+
+
+        getRestaurantReviews();
+        getRestaurantPhotos();
 
         ko.applyBindings(viewModel);
     </script>

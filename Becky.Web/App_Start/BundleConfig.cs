@@ -33,6 +33,7 @@ namespace Becky.Web
                       "~/Scripts/respond.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/extras").Include(
+                      "~/Scripts/jquery.form.js",
                       "~/Scripts/moment.js",
                       "~/Scripts/star-rating.js",
                       "~/Scripts/lightslider.js",

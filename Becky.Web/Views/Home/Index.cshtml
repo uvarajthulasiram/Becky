@@ -20,8 +20,8 @@
     <div class="panel panel-body row" data-bind="foreach: restaurants">
         <div class="col-sm-6 col-md-4">
             <p align="center">
-                <a data-bind="attr: { 'href': '@Url.Action("Restaurant", new RouteValueDictionary() {{"Controller", "Home"}})/' + Id }">
-                    <img data-bind="attr:{src: PhotoSource ? PhotoSource : '../../Images/Becky - No Image Icon.png' }" class="img img-responsive img-rounded fix-height" />
+                <a data-bind="attr: { 'href': '@Url.Action("Restaurant", new RouteValueDictionary {{"Controller", "Home"}})/' + Id }">
+                    <img data-bind="attr:{src: PhotoSource ? '../../FileStore/' + PhotoSource : '../../Images/Becky - No Image Icon.png' }" class="img img-responsive img-rounded fix-height" />
                 </a>
 
             </p>
